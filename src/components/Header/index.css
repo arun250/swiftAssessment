@@ -1,0 +1,38 @@
+.navBarContainer{
+    
+    height: 25px;
+    background-color: #272a4b;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 30px;
+}
+
+.profile-icon{
+    padding: 10px;
+    border-radius: 100px;
+    background-color: white;
+    color: #272a4b;
+    
+}
+
+
+
+.profileContainer{
+    display: flex;
+    
+    align-items: center;
+    width: 170px;
+    justify-content: space-between;
+    
+}
+
+.profile-name{
+font-size: 16px;
+}
+
+.logo{
+    width: 80px;
+    height: 80;
+}
