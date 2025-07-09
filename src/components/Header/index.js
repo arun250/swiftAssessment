@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link, useNavigate } from "react-router-dom"
+import { Link} from "react-router-dom"
 import { useContext } from 'react'
 import { UserContext } from '../../context/UserContext'
 import "./index.css"
@@ -16,7 +16,7 @@ const Header = () => {
     <>
       <nav className='navBarContainer'>
         <Link to ="/">
-          <img src = "https://cdn.prod.website-files.com/6509887b9119507025235a5a/650ada40fd6cf3427547c9d8_Swift%20logo.svg" className='logo'></img>
+          <img src = "https://cdn.prod.website-files.com/6509887b9119507025235a5a/650ada40fd6cf3427547c9d8_Swift%20logo.svg" alt="logo" className='logo'></img>
         </Link>
           <div className='profileContainer'>
                   <p className='profile-icon'> {getInitials(userName)}</p>

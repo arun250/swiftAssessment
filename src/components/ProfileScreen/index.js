@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { MoveLeft } from 'lucide-react';
 import { BeatLoader } from 'react-spinners';
-import {useNavigate} from "react-router-dom"
+
 import "./index.css"
 import { UserContext } from '../../context/UserContext';
 
