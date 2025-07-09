@@ -1,15 +1,23 @@
 import React, { Component } from 'react'
 import { MoveLeft } from 'lucide-react';
-import Loader from 'react-loader-spinner'
+import { BeatLoader } from 'react-spinners';
 import {useNavigate} from "react-router-dom"
 import "./index.css"
 import { UserContext } from '../../context/UserContext';
+
+const apiStatusConstants = {
+  initial: 'INITIAL',
+  success: 'SUCCESS',
+  failure: 'FAILURE',
+  inProgress: 'IN_PROGRESS',
+}
 
 class ProfileScreen extends Component {
 static contextType = UserContext
   state = {
     userData: {},
-    firstUser:[]
+    firstUser: [],
+    apiStatus:apiStatusConstants.initial
   }
   onClickBackArrow = () => {
     const { navigate } = this.props
@@ -20,13 +28,18 @@ componentDidMount() {
  this.getUserData()  
 }
 
-  getUserData = async () => {
-    const apiUrl = "https://jsonplaceholder.typicode.com/users"
+getUserData = async () => {
+  this.setState({ apiStatus: apiStatusConstants.inProgress });
+
+  const apiUrl = "https://jsonplaceholder.typicode.com/users";
+  
+  try {
+    const response = await fetch(apiUrl);
     
-    const response = await fetch(apiUrl)
-    if (response.ok === true) {
-      const fetchedData = await response.json()
-      const updatedData = fetchedData.map((user) => ({
+    if (response.ok) {
+      const fetchedData = await response.json();
+
+      const updatedData = fetchedData.map(user => ({
         id: user.id,
         name: user.name,
         username: user.username,
@@ -38,26 +51,56 @@ componentDidMount() {
           zipcode: user.address.zipcode,
           geo: {
             lat: user.address.geo.lat,
-            lng: user.address.geo.lng
+            lng: user.address.geo.lng,
           },
-         },
+        },
         phone: user.phone,
         website: user.website,
         company: {
           name: user.company.name,
           catchPhrase: user.company.catchPhrase,
-          bs: user.company.bs
-        }
-
+          bs: user.company.bs,
+        },
       }));
-      console.log(updatedData)
-      this.setState({ userData: updatedData, firstUser: updatedData[0] })
-    
-    
-    }
-  }
 
-  renderProfileHeadingContainer = () => {
+      const firstUser = updatedData[0];
+      const { setUserName } = this.context;
+
+      this.setState({
+        userData: updatedData,
+        firstUser: firstUser,
+        apiStatus: apiStatusConstants.success,
+      }, () => {
+        setUserName(firstUser.name)
+      });
+
+    } else {
+      this.setState({ apiStatus: apiStatusConstants.failure });
+    }
+
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    this.setState({ apiStatus: apiStatusConstants.failure });
+  }
+}
+
+
+  renderLoadingView = () => (
+    <div className="products-loader-container">
+      <BeatLoader color="#36d7b7" loading={true} size={20} />
+    </div>
+  )
+
+  renderFailureView = () => (
+    <img
+      src="https://res.cloudinary.com/diejm0elz/image/upload/v1749180642/Group_7519_izkpro.png"
+      alt="failure View"
+      
+    />
+  )
+
+
+renderProfileHeadingContainer = () => {
     const { firstUser } = this.state
     this.context.setUserName(firstUser.name);
     return (
@@ -130,19 +173,36 @@ componentDidMount() {
     </div>
        </>
 )
-}
-
-  render() {
-
+  }
   
-      return (
-        <>
-          <div className='bodyContainer'>
-          {this.renderProfileHeadingContainer()}
+  renderSwitchCases() {
+    const {apiStatus} = this.state
+    switch (apiStatus) {
+      case apiStatusConstants.success:
+        return (
+          <>
+       {this.renderProfileHeadingContainer()}
           <div className='userProfileContainer'>
           {this.renderProfileCard()}
           {this.renderProfileDetails()}
           </div>
+          </>
+        )
+      case apiStatusConstants.failure:
+        return this.renderFailureView()
+      case apiStatusConstants.inProgress:
+        return this.renderLoadingView()
+      default:
+        return null
+    }
+  }
+
+render() {
+
+      return (
+        <>
+          <div className='bodyContainer'>
+          {this.renderSwitchCases()}
           </div>
         </>
     )

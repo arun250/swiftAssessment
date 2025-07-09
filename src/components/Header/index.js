@@ -7,7 +7,7 @@ import "./index.css"
 
 const Header = () => {
   const { userName } = useContext(UserContext);
-  const getInitials = (name) => {
+   const getInitials = (name) => {
     if (!name) return '';
     const parts = name.trim().split(' ');
     return parts[0][0].toUpperCase() + (parts[1]?.[0]?.toUpperCase() || '');

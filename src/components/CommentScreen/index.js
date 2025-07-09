@@ -1,6 +1,14 @@
 import React, { Component } from 'react';
 import { ChevronsUpDown } from 'lucide-react';
+import { BeatLoader } from 'react-spinners';
 import './index.css';
+
+const apiStatusConstants = {
+  initial: 'INITIAL',
+  success: 'SUCCESS',
+  failure: 'FAILURE',
+  inProgress: 'IN_PROGRESS',
+}
 
 class CommentScreen extends Component {
   state = {
@@ -12,6 +20,7 @@ class CommentScreen extends Component {
       field: null,
       direction: null,
     },
+    apiStatus : apiStatusConstants.initial
   };
 
   componentDidMount() {
@@ -24,12 +33,41 @@ class CommentScreen extends Component {
   }
 
   getCommentsData = async () => {
-    const response = await fetch('https://jsonplaceholder.typicode.com/comments');
-    if (response.ok) {
-      const fetchedData = await response.json();
-      this.setState({ commentsData: fetchedData }, this.applyFilters);
+
+    this.setState({ apiStatus: apiStatusConstants.inProgress })
+    try {
+      
+      const response = await fetch('https://jsonplaceholder.typicode.com/comments');
+      if (response.ok) {
+        const fetchedData = await response.json();
+        this.setState({ commentsData: fetchedData, apiStatus:apiStatusConstants.success }, this.applyFilters);
+      }
+      else {
+        this.setState({
+          apiStatus: apiStatusConstants.failure,
+        })
+      }
     }
-  };
+    catch (error) {
+      this.setState({ apiStatus: apiStatusConstants.failure });
+    }
+  }
+
+  renderLoadingView = () => (
+    <div className="products-loader-container">
+      <BeatLoader color="#36d7b7" loading={true} size={20} />
+    </div>
+  )
+
+  renderFailureView = () => (
+    <img
+      src="https://res.cloudinary.com/diejm0elz/image/upload/v1749180642/Group_7519_izkpro.png"
+      alt="failure View"
+      
+    />
+  )
+
+
 
   saveStateToLocalStorage = () => {
     const { searchInput, currentPage, itemsPerPage, sortConfig } = this.state;
@@ -194,11 +232,30 @@ class CommentScreen extends Component {
     );
   };
 
+  renderSwitchCases() {
+    const {apiStatus} = this.state
+    switch (apiStatus) {
+      case apiStatusConstants.success:
+        return (
+          <>
+          {this.renderTabSection()}
+        {this.renderCommentsData()}
+          </>
+        )
+      case apiStatusConstants.failure:
+        return this.renderFailureView()
+      case apiStatusConstants.inProgress:
+        return this.renderLoadingView()
+      default:
+        return null
+    }
+  }
+
+
   render() {
     return (
       <div className="body-container">
-        {this.renderTabSection()}
-        {this.renderCommentsData()}
+        {this.renderSwitchCases()}
       </div>
     );
   }
