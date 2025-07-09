@@ -44,7 +44,7 @@ src/
 ├── App.js
 └── index.js
 
-- Clone the Repository: git clone https://github.com/your-username/swift-assessment.git
+- Clone the Repository: git clone [https://github.com/your-username/swift-assessment.git](https://github.com/arun250/swiftAssessment.git)
 - cd swift-assessment
 - Install Dependencies: npm install
 - Start the Application: npm start
